@@ -19,8 +19,13 @@ html(lang="en")
                     video#myFace(autoplay, playsinline, width="400", height="400")
                     button#mute Mute
                     button#camera Turn Camera Off
+                    button#questionBtn Question
                     select#cameras
                     video#peerFace(autoplay, playsinline, width="400", height="400")
+                div#questionBox
+                    form
+                        textarea(cols="50", rows="10", required)
+                        button Send
                     
         script(src="/socket.io/socket.io.js")
         script(src="/public/js/app.js")

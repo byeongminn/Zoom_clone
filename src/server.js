@@ -13,10 +13,18 @@ app.get("/*", (req, res) => res.redirect("/"));
 const httpServer = http.createServer(app);
 const wsServer = SocketIO(httpServer);
 
+let masterId;
+
 wsServer.on("connection", (socket) => {
-    socket.on("join_room", (roomName) => {
+    socket.on("join_room", (roomName, masterIdSet) => {
         socket.join(roomName);
-        socket.to(roomName).emit("welcome");
+        const room =wsServer.sockets.adapter.rooms;
+        const size = room.get(roomName).size;
+        if(size===1) {
+            masterId = socket.id;
+            masterIdSet();
+        }
+        socket.in(roomName).emit("welcome");
     })
     socket.on("offer", (offer, roomName) => {
         socket.to(roomName).emit("offer", offer);
@@ -26,6 +34,9 @@ wsServer.on("connection", (socket) => {
     })
     socket.on("ice", (ice, roomName) => {
         socket.to(roomName).emit("ice", ice);
+    })
+    socket.on("questionSubmit", (question, roomName) => {
+        socket.to(masterId).emit("questionSubmit",question);
     })
 })
 
